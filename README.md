@@ -1,7 +1,7 @@
 # KobitoKey_QWERTY
 
 小人キーや人キーのケース、TypeSurfer各種の3DデータはReleasesよりダウンロード出来ます。
-ダサい使い方はしないこと。
+ダサい使い方はしないこと。test
 
 
 Layer 0 QWERTY
