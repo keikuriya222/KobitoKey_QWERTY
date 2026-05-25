@@ -39,14 +39,14 @@
             bindings = <&kp LANG2>;
         };
 
-        comboNUBS {
+        comboMinus {
             key-positions = <9 8>;
-            bindings = <&kp JP_YEN>;
+            bindings = <&kp MINUS>;
         };
 
-        comboMinus {
+        comboNUBS {
             key-positions = <9 8 7>;
-            bindings = <&kp MINUS>;
+            bindings = <&kp JP_YEN>;
         };
 
         comboApos {
