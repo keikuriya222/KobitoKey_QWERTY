@@ -128,10 +128,10 @@
         layer3 {
             label = "MOUSE";
             bindings = <
-                &trans              &kp LC(W)  &kp LS(LC(E))  &kp LA(LS(R))  &kp LC(T)  &trans  &mkp MB1         &mkp MB3          &mkp MB2     &trans
-                &kp LC(A)           &kp LC(S)  &kp LC(D)      &kp LC(F)      &kp LC(G)  &trans  &kp LS(LC(TAB))  &kp LA(UP_ARROW)  &kp LC(TAB)  &trans
-                &kp LC(Z)           &kp LC(X)  &kp LC(C)      &kp LC(V)      &kp LC(B)  &trans  &trans           &trans            &trans       &trans
-                &kp LS(LA(LC(F3)))  &trans     &kp LCMD       &kp LALT       &to 0      &trans  &trans           &trans            &to 0        &kp RALT
+                &trans              &kp LC(W)  &kp LS(LC(E))  &kp LA(LS(R))  &kp LC(T)  &mkp MB1  &mkp MB1         &mkp MB3          &mkp MB2     &trans
+                &kp LC(A)           &kp LC(S)  &kp LC(D)      &kp LC(F)      &kp LC(G)  &trans    &kp LS(LC(TAB))  &kp LA(UP_ARROW)  &kp LC(TAB)  &trans
+                &kp LC(Z)           &kp LC(X)  &kp LC(C)      &kp LC(V)      &kp LC(B)  &trans    &trans           &trans            &trans       &trans
+                &kp LS(LA(LC(F3)))  &trans     &kp LCMD       &kp LALT       &to 0      &trans    &trans           &trans            &to 0        &kp RALT
             >;
         };
 
