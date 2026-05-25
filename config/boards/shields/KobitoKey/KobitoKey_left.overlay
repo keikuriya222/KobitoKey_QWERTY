@@ -87,7 +87,7 @@
     status = "okay";
 
     input-processors =
-        <&sensor_rotation_right>,
+        <&sensor_rotation_right>;
 };
 
 &zip_temp_layer {
