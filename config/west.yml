@@ -1,4 +1,4 @@
-manifest:
+manifest: 
   remotes:
     - name: zmkfirmware
       url-base: https://github.com/zmkfirmware
@@ -7,7 +7,9 @@ manifest:
     - name: hsgw
       url-base: https://github.com/hsgw
     - name: caksoylar  # <-- led
-      url-base: https://github.com/caksoylar  
+      url-base: https://github.com/caksoylar
+    - name: Dist16384  # <-- PMW3610 driver fork
+      url-base: https://github.com/Dist16384
 
   projects:
     # ZMK 本体。公式の app/west.yml を取り込む
@@ -17,11 +19,12 @@ manifest:
       import: app/west.yml
 
     # PMW3610 ドライバ（外部モジュール）
+    # badjeff/zmk-pmw3610-driver ではなく、
+    # Dist16384/zmk-pmw3610-driver を使う
     - name: zmk-pmw3610-driver
-      remote: badjeff
-      revision: zmk-0.3
-      # 置き場所を明示したい場合は path を指定（任意）
-      # path: modules/zmk-pmw3610-driver
+      remote: Dist16384
+      revision: main
+      path: modules/zmk-pmw3610-driver
     
     # Sensor-rotation
     - name: zmk-feature-sensor_rotation
