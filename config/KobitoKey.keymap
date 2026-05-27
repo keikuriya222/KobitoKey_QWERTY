@@ -99,22 +99,22 @@
         };
 
         hidarikakko {
-            bindings = <&kp LPAR>;
+            bindings = <&kp JP_LPAREN>;
             key-positions = <13 14>;
         };
 
         hidarichukakko {
-            bindings = <&kp LEFT_BRACKET>;
+            bindings = <&kp JP_LBRACKET>;
             key-positions = <24 23>;
         };
 
         migikakko {
-            bindings = <&kp RPAR>;
+            bindings = <&kp JP_RPAREN>;
             key-positions = <15 16>;
         };
 
         migichukakko {
-            bindings = <&kp RIGHT_BRACKET>;
+            bindings = <&kp JP_RBRACKET>;
             key-positions = <25 26>;
         };
 
