@@ -175,10 +175,10 @@
         layer3 {
             label = "MOUSE";
             bindings = <
-&trans              &kp LC(W)  &kp LS(LC(E))  &kp LA(LS(R))  &kp LC(T)  &mkp MB1    &mkp MB1         &mkp MB3          &mkp MB2     &kp LC(P)
-&kp LC(A)           &kp LC(S)  &kp LC(D)      &kp LC(F)      &kp LC(G)  &trans      &kp LS(LC(TAB))  &kp LA(UP_ARROW)  &kp LC(TAB)  &trans
-&kp LC(Z)           &kp LC(X)  &kp LC(C)      &kp LC(V)      &kp LC(B)  &trans      &trans           &trans            &trans       &trans
-&kp LS(LA(LC(F3)))  &trans     &kp LCMD       &kp LALT       &to 0      &kp DELETE  &kp LC(ENTER)    &trans            &to 0        &kp RALT
+&kp LC(Q)           &kp LC(W)  &kp LS(LC(E))  &kp LA(LS(R))  &kp LC(T)  &mkp MB1    &mkp MB1         &mkp MB3          &mkp MB2        &kp LC(P)
+&kp LC(A)           &kp LC(S)  &kp LC(D)      &kp LC(F)      &kp LC(G)  &kp LC(H)   &kp LS(LC(TAB))  &kp LA(UP_ARROW)  &kp LC(TAB)     &kp LC(SEMICOLON)
+&kp LC(Z)           &kp LC(X)  &kp LC(C)      &kp LC(V)      &kp LC(B)  &kp LC(N)   &kp LC(M)        &kp LC(A)         &kp LC(PERIOD)  &kp LC(SLASH)
+&kp LS(LA(LC(F3)))  &trans     &kp LCMD       &kp LALT       &to 0      &kp DELETE  &kp LC(ENTER)    &trans            &to 0           &kp RALT
             >;
         };
 
