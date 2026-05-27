@@ -122,6 +122,11 @@
             bindings = <&mo 1>;
             key-positions = <34 33>;
         };
+
+        atmark {
+            bindings = <&kp JP_AT>;
+            key-positions = <17 18>;
+        };
     };
 
     behaviors {
