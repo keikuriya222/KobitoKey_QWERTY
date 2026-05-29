@@ -127,6 +127,11 @@
             bindings = <&kp JP_AT>;
             key-positions = <17 18>;
         };
+
+        ctrl_y {
+            bindings = <&kp LC(Y)>;
+            key-positions = <5 6>;
+        };
     };
 
     behaviors {
@@ -140,7 +145,7 @@
             label = "LAYER_TAP_SLOW";
             #binding-cells = <2>;
             flavor = "tap-preferred";
-            tapping-term-ms = <700>;
+            tapping-term-ms = <500>;
             bindings = <&mo>, <&kp>;
         };
     };
@@ -160,7 +165,7 @@
         layer1 {
             label = "NUMBER";
             bindings = <
-&kp F1  &kp F2  &kp F3  &kp F4     &kp F5  &kp F6     &kp F7     &kp F8    &kp F9    &kp F12
+&kp F1  &kp F2  &kp F3  &kp F4     &kp F5  &kp F6     &kp F7     &kp F8    &kp F10   &kp F12
 &kp N1  &kp N2  &kp N3  &kp N4     &kp N5  &kp N6     &kp N7     &kp N8    &kp N9    &kp N0
 &trans  &kp N7  &kp N8  &kp N9     &trans  &kp ASTRK  &kp SLASH  &kp LBKT  &kp RBKT  &trans
 &trans  &trans  &trans  &kp LSHFT  &trans  &trans     &trans     &trans    &trans    &trans
