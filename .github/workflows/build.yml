@@ -4,3 +4,89 @@ on: [push, pull_request, workflow_dispatch]
 jobs:
   build:
     uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3
+
+  serial-dfu:
+    name: Package USB serial DFU
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: firmware
+          path: firmware
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Adafruit DFU packaging utility
+        run: python -m pip install adafruit-nrfutil==0.5.3.post16
+      - name: Package left and right application images
+        run: |
+          python - <<'PY'
+          import binascii
+          import json
+          import struct
+          import subprocess
+          from pathlib import Path
+          from tempfile import TemporaryDirectory
+          from zipfile import ZipFile
+
+          app_start = 0x27000
+          settings_start = 0xEC000
+          family_nrf52840 = 0xADA52840
+          output = Path('serial-dfu')
+          output.mkdir()
+
+          for side in ('left', 'right'):
+              [uf2] = Path('firmware').glob(f'KobitoKey_{side} *-seeeduino_xiao_ble-zmk.uf2')
+              data = uf2.read_bytes()
+              if not data or len(data) % 512:
+                  raise ValueError(f'{uf2}: invalid UF2 size')
+
+              count = len(data) // 512
+              payloads = {}
+              for offset in range(0, len(data), 512):
+                  magic0, magic1, flags, addr, size, index, total, family = struct.unpack_from(
+                      '<8I', data, offset
+                  )
+                  end_magic, = struct.unpack_from('<I', data, offset + 508)
+                  if (
+                      (magic0, magic1, end_magic) != (0x0A324655, 0x9E5D5157, 0x0AB16F30)
+                      or flags != 0x2000
+                      or family != family_nrf52840
+                      or size != 256
+                      or total != count
+                      or index >= count
+                      or index in payloads
+                      or addr != app_start + index * size
+                      or addr + size > settings_start
+                  ):
+                      raise ValueError(f'{uf2}: unexpected UF2 block at byte {offset}')
+                  payloads[index] = data[offset + 32:offset + 32 + size]
+
+              image = b''.join(payloads[index] for index in range(count))
+              package = output / f'KobitoKey_{side}_dfu.zip'
+              with TemporaryDirectory() as tmp:
+                  binary = Path(tmp) / f'KobitoKey_{side}.bin'
+                  binary.write_bytes(image)
+                  subprocess.run([
+                      'adafruit-nrfutil', 'dfu', 'genpkg', '--dev-type', '0x0052',
+                      '--application', str(binary), str(package),
+                  ], check=True)
+              with ZipFile(package) as archive:
+                  manifest = json.loads(archive.read('manifest.json'))['manifest']
+                  app = manifest['application']
+                  if (
+                      archive.testzip() is not None
+                      or set(manifest) != {'application', 'dfu_version'}
+                      or archive.read(app['bin_file']) != image
+                      or app['init_packet_data']['firmware_crc16'] != binascii.crc_hqx(image, 0xFFFF)
+                  ):
+                      raise ValueError(f'{package}: invalid application package')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: serial-dfu
+          path: serial-dfu/*.zip
+          if-no-files-found: error
