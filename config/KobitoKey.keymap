@@ -50,6 +50,11 @@
             bindings = <&kp JP_YEN>;
         };
 
+        comboCARET {
+            key-positions = <8 7>;
+            bindings = <&kp JP_CARET>;
+        };
+
         comboApos {
             key-positions = <19 18>;
             bindings = <&kp APOS>;
