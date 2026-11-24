@@ -250,8 +250,13 @@ static int get_peripheral_battery(void) {
 
 static int on_keymap_binding_pressed(struct zmk_behavior_binding *binding,
                                      struct zmk_behavior_binding_event event) {
-    int left_bat = get_central_battery();
-    int right_bat = get_peripheral_battery();
+    int central_battery = get_central_battery();
+    int peripheral_battery = get_peripheral_battery();
+
+    // The labels refer to physical sides, regardless of the central role.
+    const bool central_is_right = IS_ENABLED(CONFIG_SHIELD_KOBITOKEY_RIGHT);
+    int left_bat = central_is_right ? peripheral_battery : central_battery;
+    int right_bat = central_is_right ? central_battery : peripheral_battery;
 
     /* Send: FORMAT_PREFIX + left_value + FORMAT_MIDDLE + right_value + FORMAT_SUFFIX */
     send_string(FORMAT_PREFIX);
