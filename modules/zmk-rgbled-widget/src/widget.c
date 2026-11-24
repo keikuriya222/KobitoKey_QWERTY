@@ -89,7 +89,6 @@ struct blink_item {
     uint8_t color;
     uint16_t duration_ms;
     uint16_t sleep_ms;
-    bool charging_changed;
 };
 
 // flag to indicate whether the initial boot up sequence is complete
@@ -124,35 +123,6 @@ K_MSGQ_DEFINE(led_msgq, sizeof(struct blink_item), 16, 1);
 #if DT_NODE_HAS_PROP(DT_NODELABEL(kobito_charging), gpios)
 static const struct gpio_dt_spec charge_status =
     GPIO_DT_SPEC_GET(DT_NODELABEL(kobito_charging), gpios);
-static struct gpio_callback charge_callback;
-
-static void charge_status_changed(const struct device *port, struct gpio_callback *callback,
-                                  gpio_port_pins_t pins) {
-    ARG_UNUSED(port);
-    ARG_UNUSED(callback);
-    ARG_UNUSED(pins);
-
-    struct blink_item wake = {.charging_changed = true};
-    k_msgq_put(&led_msgq, &wake, K_NO_WAIT);
-}
-
-static bool configure_charge_status(void) {
-    if (!gpio_is_ready_dt(&charge_status) ||
-        gpio_pin_configure_dt(&charge_status, GPIO_INPUT) < 0) {
-        return false;
-    }
-
-    gpio_init_callback(&charge_callback, charge_status_changed, BIT(charge_status.pin));
-    if (gpio_add_callback(charge_status.port, &charge_callback) < 0) {
-        return false;
-    }
-
-    if (gpio_pin_interrupt_configure_dt(&charge_status, GPIO_INT_EDGE_BOTH) < 0) {
-        gpio_remove_callback(charge_status.port, &charge_callback);
-        return false;
-    }
-    return true;
-}
 #endif
 
 static void indicate_connectivity_internal(void) {
@@ -404,40 +374,29 @@ extern void led_process_thread(void *d0, void *d1, void *d2) {
 #endif
 
 #if DT_NODE_HAS_PROP(DT_NODELABEL(kobito_charging), gpios)
-    const bool charge_status_ready = configure_charge_status();
-    static const uint16_t pulse_ms[] = {180, 180, 180, 1460};
-    int64_t next_pulse = 0;
-    size_t pulse = 0;
+    const bool charge_status_ready = gpio_is_ready_dt(&charge_status) &&
+                                     gpio_pin_configure_dt(&charge_status, GPIO_INPUT) == 0;
     bool was_charging = false;
+    const k_timeout_t wait = charge_status_ready ? K_MSEC(250) : K_FOREVER;
+#else
+    const k_timeout_t wait = K_FOREVER;
 #endif
 
     while (true) {
+        struct blink_item blink;
+        int rc = k_msgq_get(&led_msgq, &blink, wait);
 #if DT_NODE_HAS_PROP(DT_NODELABEL(kobito_charging), gpios)
         if (charge_status_ready && gpio_pin_get_dt(&charge_status) > 0) {
-            int64_t now = k_uptime_get();
-            if (now >= next_pulse) {
-                set_rgb_leds(pulse % 2 == 0 ? 3 : 0, 0); // Yellow, then off.
-                next_pulse = now + pulse_ms[pulse];
-                pulse = (pulse + 1) % ARRAY_SIZE(pulse_ms);
-            }
+            set_rgb_leds(BIT(0), 0); // Red while charging.
             was_charging = true;
-
-            // Consume status messages during charging without interrupting the pulse.
-            struct blink_item ignored;
-            k_msgq_get(&led_msgq, &ignored, K_MSEC(next_pulse - now));
             continue;
         }
         if (was_charging) {
             set_rgb_leds(led_layer_color, 0);
             was_charging = false;
-            next_pulse = 0;
-            pulse = 0;
         }
 #endif
-        // wait until a blink item is received and process it
-        struct blink_item blink;
-        k_msgq_get(&led_msgq, &blink, K_FOREVER);
-        if (blink.charging_changed) {
+        if (rc != 0) {
             continue;
         }
         if (blink.duration_ms > 0) {
